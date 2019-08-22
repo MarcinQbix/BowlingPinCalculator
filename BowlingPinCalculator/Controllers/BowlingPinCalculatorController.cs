@@ -88,58 +88,63 @@ namespace BowlingPinCalculator.Controllers
         {
             int round = 0;
             int score = 0;
-            bool isStrike=false;
-            bool isSpread = false ;
-
+            int maxThrowCount = 20;
+            int lastRoundThrow=0;
+            int attempNumber = 1;
            
-            for (int i = 0; i < scoreTable.Length; i += 2)
+            for (int i = 0; i < maxThrowCount; i ++)
             {
-                round++;
-
-                int firstThrow = scoreTable[i];
-                int secondThrow = scoreTable[i + 1];
-                //checking for last round if strike
-                if (round == 10 && firstThrow == 10)
+               
+                int yourThrow = scoreTable[i];
+                if (yourThrow == 10)
                 {
-                   int finalThrow = scoreTable[i + 2];
-                    int finalThrowStrike = scoreTable[i + 3];
+                    round++;
+                    score += yourThrow + scoreTable[i + 1] + scoreTable[i + 2];
+                   
+                    if (round==10)
+                    {
+                        //checking for last round if strike
+                        return score;
+                    }
+                }
+                else
+                {
+                    score += yourThrow;
+                    
+                    //checking if strike
 
-
-                    score += finalThrow + firstThrow+finalThrowStrike;
-
-                    return score;
+                    if (round == 10)
+                    {
+                        //checking for last round 
+                        return score;
+                    }
+                    if (attempNumber == 1)
+                    {
+                        lastRoundThrow = yourThrow;
+                    }
+                    
 
                 }
-                //checking for last round if spread
-                else if (round == 10 && firstThrow != 10 && firstThrow + secondThrow == 10)
+                if (attempNumber == 2)
                 {
-                    int finalThrow = scoreTable[i + 2];
-                    score += finalThrow + secondThrow;
-                    return score;
+                    round++;
+                    if (yourThrow != 10 && yourThrow + lastRoundThrow == 10)
+                    {
+                        score += scoreTable[i + 1];
+                        
+                    }
+                    if (round == 10)
+                    {
+                        return score;
+                    }
+                    attempNumber = 1;
+                    
 
                 }
-
-                if (isStrike.Equals(true))
+                else if(yourThrow!=10&& attempNumber==1)
                 {
-                    score += firstThrow + secondThrow;
-                    isStrike = false;
+                    attempNumber++;
                 }
-                if (isSpread.Equals(true))
-                {
-                    score += firstThrow;
-                    isSpread = false;
-                }
-                if (firstThrow.Equals(10))
-                {
-                    isStrike = true;
-                }
-                else if (firstThrow != 10 && firstThrow + secondThrow == 10)
-                {
-                    isSpread = true;
-
-                }
-                 score += firstThrow + secondThrow;
-                
 
 
             }
